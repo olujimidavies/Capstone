@@ -1,0 +1,376 @@
+/* Full white background */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #ffffff; /* Changed to white */
+  color: #1a1a1a;
+  text-align: center;
+  display: center;
+}
+
+.app {
+  background-color: white; /* Changed to white */
+  min-height: 100vh;
+}
+
+/* Header & footer */
+.header,
+.footer {
+  background-color: navy; /* Kept as red */
+  color: white;
+  padding: 1rem 2rem;
+  display: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer {
+  margin-top: 2rem;
+}
+
+/* Main container */
+.container {
+  max-width: 1200px;
+  background-color: white;
+  margin: auto;
+  padding: 2rem;
+}
+
+/* Buttons */
+.button {
+  background-color: blue;
+  color: white;
+  padding: 1rem;
+  margin: 0.25rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  height: 70px;
+  transition: background-color 0.2s ease;
+  align-items: left;
+}
+
+.button:hover {
+  background-color: red
+  ;
+}
+
+/* Input */
+input {
+  padding: 1rem; /* Increase padding for a bigger look */
+  margin: 0.25rem;
+  border: 1px solid;
+  border-radius: 4px;
+  background-color: #ffffff; /* Changed to white */
+  color: #1a1a1a;
+  width: 700px; /* Adjust the width */
+  height: 40px;  /* Adjust the height */
+  font-size: 1rem; /* Increase font size for larger text */
+}
+
+/* Category Table (Game Board) */
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+  background-color: black;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: center;
+}
+
+.category-table th {
+  background-color: navy;
+  color: white;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
+.category-table td {
+  background-color: rgb(173, 173, 214);
+  color: #1a1a1a;
+  font-weight: bold;
+  padding: 2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.category-table td:hover {
+  background-color: blue;
+}
+
+.revealed {
+  background-color: #f2f2f2 !important;
+  color: transparent !important;
+  cursor: default !important;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding-top: 100px; /* Added padding to move modal down */
+}
+
+.question-modal {
+  background-color: #fff1e0;
+  color: #1a1a1a;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 0 25px rgba(255, 115, 0, 0.5);
+}
+
+/* Error */
+.error {
+  background-color: red;
+  color: white;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 5px;
+}
+.button.correct {
+  background-color: #28a745;
+}
+
+.button.correct:hover {
+  background-color: #218838;
+}
+
+.button.incorrect {
+  background-color: #dc3545;
+}
+
+.button.incorrect:hover {
+  background-color: #c82333;
+}
+
+.winner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: white;
+  text-align: center;
+}
+
+.winner-content {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+}
+
+.winner-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: blue;
+}
+
+.winner-content h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.final-score {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 2rem 0;
+}
+
+.final-score h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #aaa;
+}
+
+.final-score h2 {
+  font-size: 3rem;
+  color: #ffd700;
+  margin: 0;
+}
+
+.button.play-again {
+  background: #4CAF50;
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+  margin-top: 1rem;
+}
+
+.button.play-again:hover {
+  background: #45a049;
+  transform: scale(1.05);
+}
+
+/* Layout */
+.app-container {
+  min-height: 100vh;
+  background-color: white; /* Changed to white */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-section {
+  flex: 1;
+  padding: 0 2rem;
+}
+
+.controls-section {
+  display: none;
+}
+
+/* User Profile Modal */
+.user-profile-modal {
+  background-color: #fff1e0;
+  border: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 300px;
+  text-align: center;
+  margin-top: 50px; /* Added margin to move modal down */
+}
+
+.profile-picture {
+  margin-bottom: 1.5rem;
+}
+
+.profile-picture img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+}
+
+.profile-input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid navy;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.gender-selection {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gender-selection label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.gender-selection input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.profile-buttons .button {
+  flex: 1;
+  max-width: 100px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Update existing header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background-color: rgb(32, 32, 101);
+  color: white;
+  margin-bottom: 1rem;
+  position: relative;
+  min-height: 150px; /* Increased height */
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem; /* Increased gap */
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-profile-pic {
+  width: 90px; /* Slightly larger */
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+  margin-bottom: 0.8rem; /* Increased margin */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.player-info h2 {
+  margin: 0;
+  font-size: 1.3rem; /* Slightly larger font */
+  white-space: nowrap;
+}
+
+.header-right {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.header-right .button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  height: auto;
+  white-space: nowrap;
+}
+
+.controls-section .button {
+  width: 100%;
+  max-width: 200px;
+  margin: 0.5rem 0;
+}
