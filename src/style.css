@@ -551,3 +551,36 @@ input {
     box-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700aa, 0 0 60px #ffd70088;
   }
 }
+
+/* Single Player Toggle Styling */
+.single-player-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1rem 0;
+  font-size: 1rem;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.single-player-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+/* Ensure user-profile modal spacing supports toggle nicely */
+.user-profile-modal form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Smooth animation for checkbox hover */
+.single-player-toggle:hover {
+  color: #2563eb;
+  transition: color 0.2s ease-in-out;
+}
