@@ -49,29 +49,12 @@ const JeopardyGameDemo = () => {
     });
   };
 
-   const sendToBackend = () => {
-     console.log("Sending questions...");
-     let data = JSON.parse("[{\"gameId\":3,\"questionId\":1,\"category\":\"Figurative Proverbs\",\"question\":\"What does 'A penny saved is a penny earned' mean?\",\"answer\":\"Saving is earning\",\"points\":100},{\"gameId\":3,\"questionId\":2,\"category\":\"Figurative Proverbs\",\"question\":\"What figurative language is used in 'Time is money'?\",\"answer\":\"Metaphor\",\"points\":200},{\"gameId\":3,\"questionId\":3,\"category\":\"Figurative Proverbs\",\"question\":\"What lesson is taught by 'Don't count your chickens before they hatch'?\",\"answer\":\"Don't assume success early\",\"points\":300},{\"gameId\":3,\"questionId\":4,\"category\":\"Figurative Proverbs\",\"question\":\"Which proverb teaches the value of hard work and preparation?\",\"answer\":\"The ant and the grasshopper\",\"points\":400},{\"gameId\":3,\"questionId\":5,\"category\":\"Figurative Proverbs\",\"question\":\"Explain how 'Early to bed and early to rise makes a man healthy, wealthy, and wise' uses figurative language.\",\"answer\":\"Rhyme and parallelism\",\"points\":500},{\"gameId\":3,\"questionId\":6,\"category\":\"Sentence Types\",\"question\":\"Which sentence type has one independent clause?\",\"answer\":\"Simple sentence\",\"points\":100},{\"gameId\":3,\"questionId\":7,\"category\":\"Sentence Types\",\"question\":\"What type of sentence uses 'because' to connect clauses?\",\"answer\":\"Complex sentence\",\"points\":200},{\"gameId\":3,\"questionId\":8,\"category\":\"Sentence Types\",\"question\":\"What sentence type contains two independent clauses joined by a conjunction?\",\"answer\":\"Compound sentence\",\"points\":300},{\"gameId\":3,\"questionId\":9,\"category\":\"Sentence Types\",\"question\":\"Is 'Although I was tired, I finished my homework' a compound or complex sentence?\",\"answer\":\"Complex\",\"points\":400},{\"gameId\":3,\"questionId\":10,\"category\":\"Sentence Types\",\"question\":\"What makes a sentence fragment incorrect?\",\"answer\":\"Missing subject or verb\",\"points\":500},{\"gameId\":3,\"questionId\":11,\"category\":\"Vocabulary and Context Clues\",\"question\":\"What does 'booming' mean in context?\",\"answer\":\"Growing quickly\",\"points\":100},{\"gameId\":3,\"questionId\":12,\"category\":\"Vocabulary and Context Clues\",\"question\":\"What are 'portions' in a sentence?\",\"answer\":\"Parts or amounts\",\"points\":200},{\"gameId\":3,\"questionId\":13,\"category\":\"Vocabulary and Context Clues\",\"question\":\"What strategy helps you understand unfamiliar words?\",\"answer\":\"Context clues\",\"points\":300},{\"gameId\":3,\"questionId\":14,\"category\":\"Vocabulary and Context Clues\",\"question\":\"Give an example of using a metacognitive strategy while reading.\",\"answer\":\"Asking questions\",\"points\":400},{\"gameId\":3,\"questionId\":15,\"category\":\"Vocabulary and Context Clues\",\"question\":\"What should you do if a word is unfamiliar in a passage?\",\"answer\":\"Use context or annotate\",\"points\":500},{\"gameId\":3,\"questionId\":16,\"category\":\"Author’s Claims\",\"question\":\"What is an author’s claim?\",\"answer\":\"Main point\",\"points\":100},{\"gameId\":3,\"questionId\":17,\"category\":\"Author’s Claims\",\"question\":\"How do authors support their claims?\",\"answer\":\"With evidence\",\"points\":200},{\"gameId\":3,\"questionId\":18,\"category\":\"Author’s Claims\",\"question\":\"Why are farmers’ markets booming, according to the author?\",\"answer\":\"Fresh local produce\",\"points\":300},{\"gameId\":3,\"questionId\":19,\"category\":\"Author’s Claims\",\"question\":\"How does the author show the value of farmer-customer interaction?\",\"answer\":\"Uses examples\",\"points\":400},{\"gameId\":3,\"questionId\":20,\"category\":\"Author’s Claims\",\"question\":\"What does it mean to annotate a text?\",\"answer\":\"Add notes\",\"points\":500},{\"gameId\":3,\"questionId\":21,\"category\":\"Economic Choices\",\"question\":\"What is an economic choice?\",\"answer\":\"Money decision\",\"points\":100},{\"gameId\":3,\"questionId\":22,\"category\":\"Economic Choices\",\"question\":\"Why might someone choose to save instead of spend?\",\"answer\":\"Future benefit\",\"points\":200},{\"gameId\":3,\"questionId\":23,\"category\":\"Economic Choices\",\"question\":\"What lesson does the grasshopper teach about money?\",\"answer\":\"Prepare ahead\",\"points\":300},{\"gameId\":3,\"questionId\":24,\"category\":\"Economic Choices\",\"question\":\"Name a benefit of spending money.\",\"answer\":\"Immediate enjoyment\",\"points\":400},{\"gameId\":3,\"questionId\":25,\"category\":\"Economic Choices\",\"question\":\"What advice would Ben Franklin give about money?\",\"answer\":\"Save wisely\",\"points\":500}]"); // Replace this with your JSON string
-    
-
-    fetch('/api/jeopardy/createquestions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        questionSet: JSON.stringify(data)
-      })
-    })
-    .then(res => res.text()) // or .json() if your backend returns JSON
-    .then(message => console.log('Backend response:', message))
-    .catch(err => console.error('Error:', err));
-  }
-
   const generateAndSendQuestions = async () => {
     if (!newCategoryInput.trim()) return;
     setLoading(true);
-  
+    const random4Digit = Math.floor(Math.random() * 9000) + 1000;
+    console.log(random4Digit);
+
     const prompt = `I need you to populate a Jeopardy board with questions for my web app. The backend will process your response into Question objects. It is expecting JSON in the form of [{ 
         "gameId": , 
         "questionId": , 
@@ -82,7 +65,7 @@ const JeopardyGameDemo = () => {
     } 
 ...
 ]
-Generate 5 categories with 5 questions each for a total of exactly 25 questions. The response should be in raw text form. Do not insert spaces or escape characters. Give ONLY the JSON in string format. In this case use gameId = 2. The point values should be from 100 to 500 based on difficulty in each category. Try to make answers one word or short phrases, and make them as unambiguous as possible. Give the response in a single line. Generate the questions based on the following content:\n\n${newCategoryInput}`;
+Generate 5 categories with 5 questions each for a total of exactly 25 questions. The response should be in raw text form. Do not insert spaces or escape characters. Give ONLY the JSON in string format. In this case use gameId = ${random4Digit}. The point values should be from 100 to 500 based on difficulty in each category. Try to make answers one word or short phrases, and make them as unambiguous as possible. Give the response in a single line. Generate the questions based on the following content:\n\n${newCategoryInput}`;
   
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -117,7 +100,6 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
   
       //const resultText = await backendRes.text();
       //console.log('Backend response:', resultText);
-      alert('Questions generated and sent to backend!');
       setNewCategoryInput('');
     } 
     catch (error) {
@@ -251,8 +233,6 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
             />
             <button className="button" onClick={generateAndSendQuestions} disabled={loading}>
                 Generate AI Questions</button>
-
-              <button className="button" onClick={sendToBackend}>Send Questions to Backend</button>
             </div> 
              {/* do not need just for testing */}
 
