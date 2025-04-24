@@ -26,7 +26,7 @@ const JeopardyGameDemo = () => {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [singlePlayer, setSinglePlayer] = useState(false);
-  //const OPENAI_API_KEY = ""; // replace this
+  const OPENAI_API_KEY = ""; // replace this
 
 
   useEffect(() => {
@@ -72,15 +72,17 @@ const JeopardyGameDemo = () => {
     if (!newCategoryInput.trim()) return;
     setLoading(true);
   
-    const prompt = `I need you to populate a Jeopardy board with questions for my web app. The backend will process your response into Question objects. It is expecting JSON in the form of { 
-      "gameId": , 
-      "questionId": , 
-      "category": "", 
-      "question": "",
-      "answer": "", 
-      "points":
+    const prompt = `I need you to populate a Jeopardy board with questions for my web app. The backend will process your response into Question objects. It is expecting JSON in the form of [{ 
+        "gameId": , 
+        "questionId": , 
+        "category": "", 
+        "question": "",
+        "answer": "", 
+        "points":
     } 
-    Generate 5 categories with 5 questions each for a total of exactly 25 questions. The response should be in string form, so apply escape characters where needed. Give ONLY the JSON in string format. In this case use gameId = 4. The point values should be from 100 to 500 based on difficulty in each category. Try to make answers one word or short phrases, and make them as unambiguous as possible. Give the response in a single line. Generate the questions based on the following content:\n\n${newCategoryInput}`;
+...
+]
+Generate 5 categories with 5 questions each for a total of exactly 25 questions. The response should be in raw text form. Do not insert spaces or escape characters. Give ONLY the JSON in string format. In this case use gameId = 2. The point values should be from 100 to 500 based on difficulty in each category. Try to make answers one word or short phrases, and make them as unambiguous as possible. Give the response in a single line. Generate the questions based on the following content:\n\n${newCategoryInput}`;
   
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -92,12 +94,16 @@ const JeopardyGameDemo = () => {
         body: JSON.stringify({
           model: "gpt-4",
           messages: [{ role: "user", content: prompt }],
-          temperature: 0.7
+          temperature: 0.2
         })
       });
   
       const data = await response.json();
-      const jsonString = data.choices[0].message.content;
+      let jsonString = data.choices[0].message.content;
+      jsonString = String(jsonString);
+      if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
+        jsonString = jsonString.substring(1, jsonString.length - 1);
+      }
       console.log("Generated OpenAI JSON string:", jsonString);
   
       await fetch('/api/jeopardy/createquestions', {
@@ -109,8 +115,8 @@ const JeopardyGameDemo = () => {
       });
       
   
-      const resultText = await backendRes.text();
-      console.log('Backend response:', resultText);
+      //const resultText = await backendRes.text();
+      //console.log('Backend response:', resultText);
       alert('Questions generated and sent to backend!');
       setNewCategoryInput('');
     } 
