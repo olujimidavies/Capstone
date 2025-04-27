@@ -142,7 +142,7 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
           "Authorization": `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          model: "gpt-4",
+          model: "gpt-4o-mini",
           messages: [{ role: "user", content: prompt }],
           temperature: 0.2
         })
@@ -283,7 +283,7 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
     <>
       <div className="header">
         <div className="header-left">
-          <h1>Jeopardy Style Game</h1>
+          <h1>Jeopardy AI</h1>
           {currentGameId && <h3>Game ID: {currentGameId}</h3>}
         </div>
         <div className="header-center">
