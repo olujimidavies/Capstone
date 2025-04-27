@@ -6,11 +6,11 @@ import defaultAvatar from './assets/IMG_BDFA45B08A87-1.jpeg';
 
 const JeopardyGameDemo = () => {
   const [categories, setCategories] = useState([
-    { id: 1, name: 'Science' },
-    { id: 2, name: 'History' },
-    { id: 3, name: 'Geography' },
-    { id: 4, name: 'Entertainment' },
-    { id: 5, name: 'Sports' }
+    { id: 1, name: 'Loading...' },
+    { id: 2, name: 'Loading...' },
+    { id: 3, name: 'Loading...' },
+    { id: 4, name: 'Loading...' },
+    { id: 5, name: 'Loading...' }
   ]);
   const [players, setPlayers] = useState([
     { name: 'Player 1', score: 0 },
@@ -26,8 +26,9 @@ const JeopardyGameDemo = () => {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [singlePlayer, setSinglePlayer] = useState(false);
+  const [questionData, setQuestionData] = useState({});
+  const [currentGameId, setCurrentGameId] = useState(null);
   const OPENAI_API_KEY = ""; // replace this
-
 
   useEffect(() => {
     if (singlePlayer) {
@@ -49,11 +50,77 @@ const JeopardyGameDemo = () => {
     });
   };
 
+  const fetchQuestions = async (gameId) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://corsproxy.io/?https://jeopardybackend-production.up.railway.app/jeopardy/getall?gameId=${gameId}`);
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const text = await response.text();
+      const data = JSON.parse(text);
+      
+      console.log("Fetched questions:", data);
+  
+      if (data.length === 0) {
+        setError("No questions found for this game ID. Try generating questions first.");
+        setLoading(false);
+        return false;
+      }
+  
+      // Extract unique categories
+      const uniqueCategories = [...new Set(data.map(q => q.category))];
+      const extractedCategories = uniqueCategories.slice(0, 5).map((name, index) => ({ 
+        id: index + 1, 
+        name 
+      }));
+  
+      // If we have fewer than 5 categories, fill the rest with placeholders
+      while (extractedCategories.length < 5) {
+        extractedCategories.push({ 
+          id: extractedCategories.length + 1, 
+          name: `Category ${extractedCategories.length + 1}` 
+        });
+      }
+  
+      setCategories(extractedCategories);
+  
+      // Organize question data
+      const questions = {};
+      data.forEach(q => {
+        const categoryIndex = extractedCategories.findIndex(cat => cat.name === q.category);
+        if (categoryIndex >= 0) {
+          const categoryId = categoryIndex + 1;
+          const difficultyLevel = Math.floor((q.points / 100) - 1);
+          const key = `${categoryId}-${difficultyLevel}`;
+          questions[key] = { text: q.question, answer: q.answer };
+        }
+      });
+  
+      setQuestionData(questions);
+      setCurrentGameId(gameId);
+      setLoading(false);
+      return true;
+    } catch (error) {
+      console.error('Error fetching the questions:', error);
+      setError(`Failed to fetch questions: ${error.message}`);
+      setLoading(false);
+      return false;
+    }
+  };
+
   const generateAndSendQuestions = async () => {
-    if (!newCategoryInput.trim()) return;
+    if (!newCategoryInput.trim()) {
+      setError("Please enter content for generating questions");
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
+    
     setLoading(true);
     const random4Digit = Math.floor(Math.random() * 9000) + 1000;
-    console.log(random4Digit);
+    console.log("Generated Game ID:", random4Digit);
 
     const prompt = `I need you to populate a Jeopardy board with questions for my web app. The backend will process your response into Question objects. It is expecting JSON in the form of [{ 
         "gameId": , 
@@ -82,6 +149,10 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
       });
   
       const data = await response.json();
+      if (!data.choices || !data.choices[0]) {
+        throw new Error("Invalid response from AI");
+      }
+      
       let jsonString = data.choices[0].message.content;
       jsonString = String(jsonString);
       if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
@@ -89,7 +160,7 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
       }
       console.log("Generated OpenAI JSON string:", jsonString);
   
-      await fetch('/api/jeopardy/createquestions', {
+      const backendRes = await fetch('/api/jeopardy/createquestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -97,35 +168,44 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
         })
       });
       
-  
-      //const resultText = await backendRes.text();
-      //console.log('Backend response:', resultText);
+      if (!backendRes.ok) {
+        throw new Error("Failed to save questions to database");
+      }
+
       setNewCategoryInput('');
+      
+      // After successful generation and saving, fetch the questions for the game
+      setTimeout(async () => {
+        const success = await fetchQuestions(random4Digit);
+        if (success) {
+          setError(null);
+        } else {
+          setError("Questions were generated but could not be fetched. Try refreshing.");
+        }
+      }, 1500); // Give the backend a moment to process the questions
     } 
     catch (error) {
       console.error("OpenAI/API error:", error);
-      alert("Failed to generate or send questions.");
+      setError(`Failed to generate or send questions: ${error.message}`);
+      setTimeout(() => setError(null), 5000);
     } finally {
       setLoading(false);
     }
   };
   
-  
-
   const selectQuestion = (categoryId, difficultyLevel) => {
     const category = categories.find(c => c.id === categoryId);
     if (!category) return setError('Invalid category');
 
-    const value = (difficultyLevel + 1) * 100;
     const questionKey = `${categoryId}-${difficultyLevel}`;
-    const lookupKey = `${category.name.toLowerCase()}-${value}`;
 
     if (revealedQuestions[questionKey]) return;
 
     setLoading(true);
     setTimeout(() => {
-      const question = questionData[lookupKey];
+      const question = questionData[questionKey];
       if (question) {
+        const value = (difficultyLevel + 1) * 100;
         setActiveQuestion({
           text: question.text,
           answer: question.answer,
@@ -135,7 +215,7 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
         });
         setShowAnswer(false);
       } else {
-        setError(`No question found for ${category.name} $${value}`);
+        setError(`No question found for ${category.name} $${(difficultyLevel + 1) * 100}`);
         setTimeout(() => setError(null), 3000);
       }
       setLoading(false);
@@ -168,11 +248,22 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
           { name: 'Player 2', score: 0 }
         ]);
     setCurrentPlayerIndex(0);
+    // Don't reset categories or questionData, so players can continue with existing questions
+  };
+
+  const fetchExistingGame = async () => {
+    const gameId = prompt("Enter the Game ID to load:");
+    if (gameId && !isNaN(gameId)) {
+      await fetchQuestions(parseInt(gameId));
+    } else if (gameId !== null) {
+      setError("Please enter a valid Game ID (numbers only)");
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
   useEffect(() => {
     const total = categories.length * 5;
-    if (Object.keys(revealedQuestions).length === total) {
+    if (Object.keys(revealedQuestions).length === total && total > 0) {
       setGameCompleted(true);
     }
   }, [revealedQuestions, categories.length]);
@@ -193,6 +284,7 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
       <div className="header">
         <div className="header-left">
           <h1>Jeopardy Style Game</h1>
+          {currentGameId && <h3>Game ID: {currentGameId}</h3>}
         </div>
         <div className="header-center">
           <div className="player-info">
@@ -225,16 +317,32 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
 
             {error && <div className="error">{error}</div>}
 
-            <div>
-            <input
-              value={newCategoryInput}
-              onChange={(e) => setNewCategoryInput(e.target.value)}
-              placeholder="Paste your lesson content here"
-            />
-            <button className="button" onClick={generateAndSendQuestions} disabled={loading}>
-                Generate AI Questions</button>
-            </div> 
-             {/* do not need just for testing */}
+            <div className="game-controls">
+              <div className="generate-questions">
+                <textarea
+                  value={newCategoryInput}
+                  onChange={(e) => setNewCategoryInput(e.target.value)}
+                  placeholder="Paste your lesson content here to generate questions"
+                  rows={3}
+                />
+                <button 
+                  className="button" 
+                  onClick={generateAndSendQuestions} 
+                  disabled={loading}
+                >
+                  Generate AI Questions
+                </button>
+              </div>
+              <div className="load-game">
+                <button 
+                  className="button" 
+                  onClick={fetchExistingGame}
+                  disabled={loading}
+                >
+                  Load Existing Game
+                </button>
+              </div>
+            </div>
 
             {loading && <p>Loading...</p>}
 
