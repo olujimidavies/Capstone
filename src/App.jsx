@@ -276,14 +276,15 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
   };
 
   if (gameCompleted) {
-    return <Winner score={players.map(p => p.score)} onPlayAgain={handlePlayAgain} />;
+    return <Winner players={players} onPlayAgain={handlePlayAgain} />;
   }
+  
 
   return (
     <>
       <div className="header">
         <div className="header-left">
-          <h1>Jeopardy Style Game</h1>
+          <h1>Jeopardy AI</h1>
           {currentGameId && <h3>Game ID: {currentGameId}</h3>}
         </div>
         <div className="header-center">
@@ -305,44 +306,27 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
       <div className="app-container">
         <div className="game-section">
           <div className="container">
-            <div className="single-player-toggle">
-              <label htmlFor="single-player-checkbox">Single Player Mode</label>
-              <input 
-                type="checkbox" 
-                id="single-player-checkbox"
-                checked={singlePlayer}
-                onChange={(e) => setSinglePlayer(e.target.checked)}
-              />
-            </div>
+            
 
             {error && <div className="error">{error}</div>}
 
-            <div className="game-controls">
-              <div className="generate-questions">
-                 <input
-              value={newCategoryInput}
-              onChange={(e) => setNewCategoryInput(e.target.value)}
-              placeholder="Paste your lesson content here to generate questions"
-              rows={3}
-            />
-                <button 
-                  className="button" 
-                  onClick={generateAndSendQuestions} 
-                  disabled={loading}
-                >
-                  Generate AI Questions
-                </button>
-              </div>
-              <div className="load-game">
-                <button 
-                  className="button" 
-                  onClick={fetchExistingGame}
-                  disabled={loading}
-                >
-                  Load Existing Game
-                </button>
-              </div>
-            </div>
+            <div className="game-controls-inline">
+  <textarea
+    value={newCategoryInput}
+    onChange={(e) => setNewCategoryInput(e.target.value)}
+    placeholder="Paste your lesson content here to generate questions"
+    rows={3}
+  />
+  <div className="button-group">
+    <button className="button" onClick={generateAndSendQuestions} disabled={loading}>
+      Generate AI Questions
+    </button>
+    <button className="button" onClick={fetchExistingGame} disabled={loading}>
+      Load Existing Game
+    </button>
+  </div>
+</div>
+
 
             {loading && <p>Loading...</p>}
 
