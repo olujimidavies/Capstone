@@ -283,7 +283,7 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
     <>
       <div className="header">
         <div className="header-left">
-          <h1>Jeopardy AI</h1>
+          <h1>Jeopardy Style Game</h1>
           {currentGameId && <h3>Game ID: {currentGameId}</h3>}
         </div>
         <div className="header-center">
@@ -319,12 +319,12 @@ Generate 5 categories with 5 questions each for a total of exactly 25 questions.
 
             <div className="game-controls">
               <div className="generate-questions">
-                <textarea
-                  value={newCategoryInput}
-                  onChange={(e) => setNewCategoryInput(e.target.value)}
-                  placeholder="Paste your lesson content here to generate questions"
-                  rows={3}
-                />
+                 <input
+              value={newCategoryInput}
+              onChange={(e) => setNewCategoryInput(e.target.value)}
+              placeholder="Paste your lesson content here to generate questions"
+              rows={3}
+            />
                 <button 
                   className="button" 
                   onClick={generateAndSendQuestions} 
